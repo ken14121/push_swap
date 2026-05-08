@@ -1,0 +1,399 @@
+/*   create_new_node.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ksadayas <ksadayas@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/08 19:15:41 by ksadayas          #+#    #+#             */
+/*   Updated: 2026/05/08 19:55:33 by ksadayas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "push_swap.h"
+
+t_node	*create_new_node(int value)
+{
+	t_node	*new_node;
+
+	new_node = (t_node *)malloc(sizeof(t_node));
+	if (!new_node)
+		return (NULL);
+	new_node->value = value;
+	new_node->index = -1;
+	new_node->next = NULL;
+	new_node->prev = NULL;
+	return (new_node);
+}
+
+void	add_back(t_stack *stack, int value)
+{
+	t_node	*new_node;
+
+	new_node = create_new_node(value);
+	if (!new_node)
+		return ;
+	if (stack->head == NULL)
+	{
+		stack->head = new_node;
+		stack->tail = new_node;
+	}
+	else
+	{
+		stack->tail->next = new_node;
+		new_node->prev = stack->tail;
+
+		stack->tail = new_node;
+	}
+	stack->size++;
+}
+
+/*   error_check.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ksadayas <ksadayas@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/08 20:11:30 by ksadayas          #+#    #+#             */
+/*   Updated: 2026/05/08 20:25:28 by ksadayas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "push_swap.h"
+
+void	free_matrix(char **matrix)
+{
+	int	i;
+
+	i = 0;
+	if (!matrix)
+		return ;
+	while (matrix[i])
+	{
+		free(matrix[i]);
+		i++;
+	}
+	free(matrix);
+}
+
+static int	is_all_digit(char *str)
+{
+	int	i = 0;
+
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (str[i] < '0' || str[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	check_errors(int argc, char **argv)
+{
+	int		i;
+	int		j;
+	long	tmp;
+	char	**temp;
+
+	i = 1;
+	while (i < argc)
+	{
+		temp = ft_split(argv[i], ' ');
+		if (!temp)
+			error_exit();
+
+		j = 0;
+		while (temp[j])
+		{
+			if (!is_all_digit(temp[j]))
+			{
+				free_matrix(temp);
+				error_exit();
+			}
+			tmp = ft_atol(temp[j]);
+			if (tmp < -2147483648 || tmp > 2147483647)
+			{
+				free_matrix(temp);
+				error_exit();
+			}
+			j++;
+		}
+		free_matrix(temp);
+		i++;
+	}
+}
+
+*   ft_split.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ksadayas <ksadayas@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/09 07:51:13 by ksadayas          #+#    #+#             */
+/*   Updated: 2026/05/09 08:13:18 by ksadayas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "push_swap.h"
+
+size_t	ft_strlen(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+
+static char	**ft_free_all(char **split, size_t count)
+{
+	while (count > 0)
+		free(split[--count]);
+	free(split);
+	return (NULL);
+}
+
+static char	*ft_copy_word(const char *s, int start, size_t len)
+{
+	char	*word;
+	size_t	i;
+
+	word = (char *)malloc(len + 1);
+	if (!word)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		word[i] = s[start + i];
+		i++;
+	}
+	word[i] = '\0';
+	return (word);
+}
+
+static char	**ft_split_check(const char *s, char c, char **split)
+{
+	size_t	i;
+	size_t	j;
+	int		start;
+
+	i = 0;
+	j = 0;
+	start = -1;
+	while (i <= ft_strlen(s))
+	{
+		if (s[i] != c && start == -1)
+			start = i;
+		else if ((s[i] == c || s[i] == '\0') && start != -1)
+		{
+			split[j] = ft_copy_word(s, start, i - start);
+			if (!split[j])
+			{
+				return (ft_free_all(split, j));
+			}
+			j++;
+			start = -1;
+		}
+		i++;
+	}
+	split[j] = NULL;
+	return (split);
+}
+
+static int	ft_count_words(const char *s, char c)
+{
+	int	count;
+	int	trigger;
+	int	i;
+
+	count = 0;
+	trigger = 0;
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] != c && trigger == 0)
+		{
+			trigger = 1;
+			count++;
+		}
+		else if (s[i] == c)
+			trigger = 0;
+		i++;
+	}
+	return (count);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**split;
+	int		count;
+
+	if (!s)
+		return (NULL);
+	count = ft_count_words(s, c);
+	split = malloc((count + 1) * sizeof(char *));
+	if (!split)
+		return (NULL);
+	split = ft_split_check(s, c, split);
+	return (split);
+}
+
+
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ksadayas <ksadayas@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/08 20:07:56 by ksadayas          #+#    #+#             */
+/*   Updated: 2026/05/08 20:11:04 by ksadayas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "push_swap.h"
+
+int	main(int argc, char **argv)
+{
+	t_stack	stack_a;
+	t_stack	stack_b;
+	int		i;
+
+	stack_a.head = NULL;
+	stack_a.tail = NULL;
+	stack_a.size = 0;
+
+	stack_b.head = NULL;
+	stack_b.tail = NULL;
+	stack_b.size = 0;
+
+	if (argc < 2)
+		return (0);
+
+	check_errors(argc, argv);
+
+	i = 1;
+	while (i < argc)
+	{
+		add_back(&stack_a, ft_atoi(argv[i]));
+		i++;
+	}
+	return (0);
+}
+
+*   parse_args.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ksadayas <ksadayas@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/09 07:32:53 by ksadayas          #+#    #+#             */
+/*   Updated: 2026/05/09 07:52:51 by ksadayas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "push_swap.h"
+
+// 数字・符号チェック
+static int	is_all_digit(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (str[i] < '0' || str[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+// splitしたメモリを掃除する
+void	free_matrix(char **matrix)
+{
+	int	i;
+
+	i = 0;
+	if (!matrix)
+		return ;
+	while (matrix[i])
+		free(matrix[i++]);
+	free(matrix);
+}
+
+void	parse_args(int argc, char **argv, t_stack *stack_a)
+{
+	int		i;
+	int		j;
+	char	**temp;
+	long	val;
+
+	i = 1;
+	while (i < argc)
+	{
+		temp = ft_split(argv[i], ' ');
+		if (!temp)
+			error_exit();
+		j = 0;
+		while (temp[j])
+		{
+			if (!is_all_digit(temp[j]))
+			{
+				free_matrix(temp);
+				error_exit();
+			}
+			val = ft_atol(temp[j]);
+			if (val < INT_MIN || val > INT_MAX)
+			{
+				free_matrix(temp);
+				error_exit();
+			}
+			add_back(stack_a, (int)val);
+			j++;
+		}
+		free_matrix(temp);
+		i++;
+	}
+}
+
+/*   push_swap.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ksadayas <ksadayas@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/06 23:23:05 by ksadayas          #+#    #+#             */
+/*   Updated: 2026/05/09 07:53:01 by ksadayas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef PUSH_SWAP_H
+# define PUSH_SWAP_H
+
+# include <stdlib.h>
+# include <unistd.h>
+# include <limits.h>
+
+typedef struct s_node
+{
+	int				value;
+	int				index;
+	struct s_node	*next;
+	struct s_node	*prev;
+}					t_node;
+
+typedef struct s_stack
+{
+	t_node			*head;
+	t_node			*tail;
+	int				size;
+}					t_stack;
+
+t_node				*create_new_node(int value);
+void				add_back(t_stack *stack, int value);
+void				check_errors(int argc, char **argv);
+void				free_matrix(char **matrix);
+void				error_exit(void);
+
+// libft系（自作が必要なもの）
+char				**ft_split(char const *s, char c);
+long				ft_atol(const char *str);
+
+#endif
