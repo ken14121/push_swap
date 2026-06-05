@@ -449,7 +449,6 @@ AI was used for:
 - discussing radix sort
 - checking edge cases
 - generating test commands
-- writing project documentation
 
 All code was reviewed, tested, and understood before use.
 
