@@ -811,6 +811,7 @@ checker実行
 - radix sortの設計検討
 - テストコマンド作成
 - エッジケース確認
+- READMEの強化
 
 ---
 
@@ -821,7 +822,13 @@ checker実行
 - Linked List
 - Stack Data Structure
 - Big-O Complexity
-
+- ボゴソートhttps://youtube.com/shorts/qDWOp95ZHl4?si=U5Wobr62E3c1Pl0r
+- 量子ボゴソートhttps://youtube.com/shorts/8-8it0Uiol4?si=9V_BBtK5jId91k3E
+- abeソートhttps://youtube.com/shorts/27k27qwv8YI?si=GJZ9cdNlG0juAqG5
+- スターリンソートhttps://youtube.com/shorts/OBE5Tssz7wI?si=bJImNeGQrjWPnlkk
+- ミラクルソートhttps://youtube.com/shorts/WchNujn3rDk?si=m8kEUBLWJ65UgF6f
+- クイックソートhttps://youtube.com/shorts/g5copKlDIGs?si=TzAxSLoyvu-lSVAe
+- 基数ソートhttps://youtu.be/x61FJFuPQfY?si=Rw0F-B9NSgslcjzv
 
 ## コードの解説
 
